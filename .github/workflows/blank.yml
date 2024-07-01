@@ -26,19 +26,21 @@ jobs:
           git config --global user.email "${{ env.GIT_COMMIT_AUTHOR_EMAIL }}"
           git config --global user.name "${{ env.GIT_COMMIT_AUTHOR_NAME }}"
 
-      - name: Update author information
-        run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
-
       - name: Create feature branch
         run: |
           git checkout -b $BRANCH_NAME
           echo "Created and checked out to branch $BRANCH_NAME"
           git branch -vv  # Debugging: Verify the branch tracking information
 
+      - name: Add dummy files
+        run: |
+          echo "Dummy file content" > dummy-file-1.txt
+          echo "More dummy content" > dummy-file-2.txt
+          git add dummy-file-1.txt dummy-file-2.txt
+
       - name: Commit changes
         run: |
-          git add AUTHOR
-          git commit -m "Update author information"
+          git commit -m "Add dummy files"
           git push origin $BRANCH_NAME
 
       - name: Raise PR
