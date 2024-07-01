@@ -1,4 +1,4 @@
-name: Demo to create automatic PR 
+name: Demo to create automatic PR
 
 on:
   push:
@@ -47,6 +47,12 @@ jobs:
         run: |
           git checkout -b $BRANCH_NAME
           echo "Created and checked out to branch $BRANCH_NAME"
+          git branch -vv  # Debugging: Verify the branch tracking information
+
+      - name: Verify branch and fetch remote
+        run: |
+          git fetch origin
+          git branch -r  # Debugging: List all remote branches
           git branch -vv  # Debugging: Verify the branch tracking information
 
       - name: Raise PR 1
