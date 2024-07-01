@@ -24,6 +24,21 @@ jobs:
       - name: extract git commit data
         uses: rlespinasse/git-commit-data-action@v1.x
 
+      - name: Get changed files
+        id: files
+        run: |
+          FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} -- 'src/' | grep -E '\.(js|ts|css|scss|html)$' || echo "")
+          FILES_CLEANED=$(echo $FILES | xargs)  # Trims and converts newlines to spaces
+          echo "FILES=$FILES_CLEANED" >> $GITHUB_ENV
+          echo "Changed files: $FILES_CLEANED"  # Debugging: Output the changed files
+          if [ -z "$FILES_CLEANED" ]; then
+            echo "No files to format."
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          else
+            echo "Files to be formatted: $FILES_CLEANED"
+            echo "has_files=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Update author information
         run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
 
