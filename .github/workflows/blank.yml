@@ -4,62 +4,25 @@ on:
   push:
     branches:
       - main
-      
-permissions:
-  contents: write  # This line gives the workflow write permissions
-  pull-requests: write  # This line gives the workflow pull request permissions
-  
+
 jobs:
   updateAuthor:
     runs-on: ubuntu-latest
-    env:
-      BRANCH_NAME: "feature/prettier-${{ github.sha }}"
     steps:
-      # Checkout the code from the repository
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: checking out code
+        uses: actions/checkout@v2
 
       - name: extract git commit data
         uses: rlespinasse/git-commit-data-action@v1.x
 
-      - name: Get changed files
-        id: files
-        run: |
-          FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} -- 'src/' | grep -E '\.(js|ts|css|scss|html)$' || echo "")
-          FILES_CLEANED=$(echo $FILES | xargs)  # Trims and converts newlines to spaces
-          echo "FILES=$FILES_CLEANED" >> $GITHUB_ENV
-          echo "Changed files: $FILES_CLEANED"  # Debugging: Output the changed files
-          if [ -z "$FILES_CLEANED" ]; then
-            echo "No files to format."
-            echo "has_files=false" >> $GITHUB_OUTPUT
-          else
-            echo "Files to be formatted: $FILES_CLEANED"
-            echo "has_files=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Update author information
         run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
-
-      - name: Create feature branch
-        if: ${{ steps.files.outputs.has_files == 'true' }}
-        run: |
-          git checkout -b $BRANCH_NAME
-          echo "Created and checked out to branch $BRANCH_NAME"
-          git branch -vv  # Debugging: Verify the branch tracking information
-
-      - name: Verify branch and fetch remote
-        run: |
-          git fetch origin
-          git branch -r  # Debugging: List all remote branches
-          git branch -vv  # Debugging: Verify the branch tracking information
 
       - name: Raise PR 1
         id: demo-1
         uses: peter-evans/create-pull-request@v3
         with:
-          branch: ${{ env.BRANCH_NAME }}
+          branch: "auto-pr-branch1"
           base: main
           title: "demo for auto pr1"
           committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
@@ -68,3 +31,48 @@ jobs:
             This is to show automatic PR creation
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
+
+      - name: Approve Pull Request1
+        uses: juliangruber/approve-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.APPROVER_DEMO }}
+          number: ${{ steps.demo-1.outputs.pull-request-number }}
+
+      - name: Merge Pull request1
+        uses: juliangruber/merge-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.demo-1.outputs.pull-request-number }}
+          method: squash
+
+      - name: Update author information again
+        run: echo Gaurav > AUTHOR
+
+      - name: Raise PR 2
+        id: demo-2
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: "auto-pr-branch2"
+          base: main
+          title: "demo for auto pr2"
+          committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
+          author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
+          body:
+            This is to show automatic PR creation
+          token: ${{ secrets.GITHUB_TOKEN }}
+          delete-branch: true
+
+      - name: Approve Pull Request2
+        uses: juliangruber/approve-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.APPROVER_DEMO }}
+          number: ${{ steps.demo-2.outputs.pull-request-number }}
+
+      - name: Merge Pull request2
+        uses: juliangruber/merge-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.demo-2.outputs.pull-request-number }}
+          method: squash
+
+
