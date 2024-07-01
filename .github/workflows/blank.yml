@@ -6,8 +6,8 @@ on:
       - main
 
 permissions:
-  contents: write  # This line gives the workflow write permissions
-  pull-requests: write  # This line gives the workflow pull request permissions
+  contents: write
+  pull-requests: write
 
 jobs:
   updateAuthor:
@@ -15,10 +15,10 @@ jobs:
     env:
       BRANCH_NAME: "CLT-${{ github.sha }}"
     steps:
-      - name: checking out code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: extract git commit data
+      - name: Extract git commit data
         uses: rlespinasse/git-commit-data-action@v1.x
 
       - name: Update author information
@@ -30,16 +30,21 @@ jobs:
           echo "Created and checked out to branch $BRANCH_NAME"
           git branch -vv  # Debugging: Verify the branch tracking information
 
-      - name: Raise PR 1
-        id: demo-1
+      - name: Commit changes
+        run: |
+          git add AUTHOR
+          git commit -m "Update author information"
+          git push origin $BRANCH_NAME
+
+      - name: Raise PR
         uses: peter-evans/create-pull-request@v3
         with:
           branch: ${{ env.BRANCH_NAME }}
           base: main
           title: "Apply Prettier formatting"
-          committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
-          author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
-          body:
+          committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}>
+          author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}>
+          body: |
             This is to show automatic PR creation
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
