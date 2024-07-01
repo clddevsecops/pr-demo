@@ -13,7 +13,7 @@ jobs:
   updateAuthor:
     runs-on: ubuntu-latest
     env:
-      BRANCH_NAME: "feature/prettier-${{ github.sha }}"
+      BRANCH_NAME: "CLT-${{ github.sha }}"
     steps:
       - name: checking out code
         uses: actions/checkout@v2
