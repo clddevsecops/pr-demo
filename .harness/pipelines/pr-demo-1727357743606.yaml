@@ -19,6 +19,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: echo "Welcome to Harness CI"
+                  description: Simple msg
           platform:
             os: Linux
             arch: Amd64
