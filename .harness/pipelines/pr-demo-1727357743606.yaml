@@ -125,5 +125,5 @@ pipeline:
     ci:
       codebase:
         connectorRef: account.Github_OAuth_1727350968474
-        repoName: clddevsecops/pr-demo
+        repoName: clddevsecops/docker-hello-world-spring-boot
         build: <+input>
