@@ -1,5 +1,5 @@
 pipeline:
-  name: Build PR-Demo Pipeline
+  name: Build PR-Demo Enhanced
   identifier: Build_clddevsecops_pr_demo_1727357751485
   projectIdentifier: demoharness
   orgIdentifier: default
@@ -14,25 +14,96 @@ pipeline:
             steps:
               - step:
                   type: Run
-                  name: Echo Welcome Message
-                  identifier: Echo_Welcome_Message
-                  description: Simple welcome message for the CI pipeline
+                  name: Compile Code
+                  identifier: Compile_Code
+                  description: Compile project code
                   spec:
                     shell: Sh
                     command: |
-                      echo "Welcome to Harness CI Pipeline"
-                      echo "Building the project..."
-                      # Add more commands if needed here
+                      echo "Starting the build process..."
+                      #mvn clean compile # Adjust as per your build tool
+                      echo "Build process completed successfully!"
               - step:
                   type: Run
-                  name: Build Project
-                  identifier: Build_Project
-                  description: Step to build the project
+                  name: Run Unit Tests
+                  identifier: Run_Unit_Tests
+                  description: Run unit tests on the code
                   spec:
                     shell: Sh
                     command: |
-                      # Placeholder for actual build commands
-                      echo "Running build commands..."
+                      echo "Running unit tests..."
+                      #mvn test # Replace with relevant command for your project
+                      echo "Unit tests completed."
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+    - stage:
+        name: Test Stage
+        identifier: Test_Stage
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Static Code Analysis
+                  identifier: Static_Code_Analysis
+                  description: Perform static code analysis (e.g., SonarQube)
+                  spec:
+                    shell: Sh
+                    command: |
+                      echo "Running static code analysis..."
+                      # Add your actual static analysis command, e.g., sonar-scanner
+                      echo "Static code analysis completed."
+              - step:
+                  type: Run
+                  name: Integration Tests
+                  identifier: Integration_Tests
+                  description: Run integration tests
+                  spec:
+                    shell: Sh
+                    command: |
+                      echo "Running integration tests..."
+                      #mvn verify # Replace with relevant command
+                      echo "Integration tests completed."
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+    - stage:
+        name: Deploy Stage
+        identifier: Deploy_Stage
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Deploy to Staging
+                  identifier: Deploy_to_Staging
+                  description: Deploy to the staging environment
+                  spec:
+                    shell: Sh
+                    command: |
+                      echo "Deploying to staging environment..."
+                      #kubectl apply -f deployment.yaml # Replace with your actual deployment command
+                      echo "Deployment to staging completed."
+              - step:
+                  type: Run
+                  name: Run Smoke Tests
+                  identifier: Run_Smoke_Tests
+                  description: Run post-deployment smoke tests
+                  spec:
+                    shell: Sh
+                    command: |
+                      echo "Running smoke tests on staging..."
+                      # Add commands for smoke tests
+                      echo "Smoke tests completed."
           platform:
             os: Linux
             arch: Amd64
@@ -45,4 +116,3 @@ pipeline:
         connectorRef: account.Github_OAuth_1727350968474
         repoName: clddevsecops/pr-demo
         build: <+input>
-        branch: master
