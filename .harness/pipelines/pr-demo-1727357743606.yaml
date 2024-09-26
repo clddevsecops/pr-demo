@@ -1,12 +1,12 @@
 pipeline:
-  name: Build pr-demo
+  name: Build PR-Demo Pipeline
   identifier: Build_clddevsecops_pr_demo_1727357751485
   projectIdentifier: demoharness
   orgIdentifier: default
   stages:
     - stage:
-        name: Build
-        identifier: Build
+        name: Build Stage
+        identifier: Build_Stage
         type: CI
         spec:
           cloneCodebase: true
@@ -16,10 +16,23 @@ pipeline:
                   type: Run
                   name: Echo Welcome Message
                   identifier: Echo_Welcome_Message
+                  description: Simple welcome message for the CI pipeline
                   spec:
                     shell: Sh
-                    command: echo "Welcome to Harness CI"
-                  description: Simple msg
+                    command: |
+                      echo "Welcome to Harness CI Pipeline"
+                      echo "Building the project..."
+                      # Add more commands if needed here
+              - step:
+                  type: Run
+                  name: Build Project
+                  identifier: Build_Project
+                  description: Step to build the project
+                  spec:
+                    shell: Sh
+                    command: |
+                      # Placeholder for actual build commands
+                      echo "Running build commands..."
           platform:
             os: Linux
             arch: Amd64
@@ -32,3 +45,4 @@ pipeline:
         connectorRef: account.Github_OAuth_1727350968474
         repoName: clddevsecops/pr-demo
         build: <+input>
+        branch: master
