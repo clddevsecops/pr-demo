@@ -1,5 +1,5 @@
 pipeline:
-  name: Build PR-Demo Enhanced
+  name: Build PR-Demo Enhanced with Maven Setup
   identifier: Build_clddevsecops_pr_demo_1727357751485
   projectIdentifier: demoharness
   orgIdentifier: default
@@ -14,6 +14,17 @@ pipeline:
             steps:
               - step:
                   type: Run
+                  name: Install Maven
+                  identifier: Install_Maven
+                  description: Install Maven on the build environment
+                  spec:
+                    shell: Sh
+                    command: |
+                      echo "Installing Maven..."
+                      apt-get update && apt-get install -y maven
+                      echo "Maven installed successfully."
+              - step:
+                  type: Run
                   name: Compile Code
                   identifier: Compile_Code
                   description: Compile project code
@@ -21,7 +32,7 @@ pipeline:
                     shell: Sh
                     command: |
                       echo "Starting the build process..."
-                      #mvn clean compile # Adjust as per your build tool
+                      mvn clean compile
                       echo "Build process completed successfully!"
               - step:
                   type: Run
@@ -32,7 +43,7 @@ pipeline:
                     shell: Sh
                     command: |
                       echo "Running unit tests..."
-                      #mvn test # Replace with relevant command for your project
+                      mvn test
                       echo "Unit tests completed."
           platform:
             os: Linux
@@ -56,7 +67,7 @@ pipeline:
                     shell: Sh
                     command: |
                       echo "Running static code analysis..."
-                      # Add your actual static analysis command, e.g., sonar-scanner
+                      # Add your actual static analysis command
                       echo "Static code analysis completed."
               - step:
                   type: Run
@@ -67,7 +78,7 @@ pipeline:
                     shell: Sh
                     command: |
                       echo "Running integration tests..."
-                      #mvn verify # Replace with relevant command
+                      mvn verify
                       echo "Integration tests completed."
           platform:
             os: Linux
@@ -91,7 +102,7 @@ pipeline:
                     shell: Sh
                     command: |
                       echo "Deploying to staging environment..."
-                      #kubectl apply -f deployment.yaml # Replace with your actual deployment command
+                      kubectl apply -f deployment.yaml
                       echo "Deployment to staging completed."
               - step:
                   type: Run
