@@ -102,7 +102,7 @@ pipeline:
                     shell: Sh
                     command: |
                       echo "Deploying to staging environment..."
-                      kubectl apply -f deployment.yaml
+                      #kubectl apply -f deployment.yaml
                       echo "Deployment to staging completed."
               - step:
                   type: Run
